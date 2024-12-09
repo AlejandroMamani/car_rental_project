@@ -1,0 +1,11 @@
+
+body{
+    background: rgb(212, 222, 199);     /* so far a nice green here. may change to something related to cars shops or other stuff */
+}
+
+.container{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 90vh;
+}
