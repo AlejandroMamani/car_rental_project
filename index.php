@@ -3,11 +3,10 @@ $servername = "localhost";
 $username = "root";
 $password = "";
 
-$db = mysqli_connect($servername, $username, $password);
+$db = mysqli_connect($servername, $username, $password);    //same as new mysqli() in theory
 
 if (mysqli_connect_errno()) {
-    echo "Failed to connect to MySQL: " . mysqli_connect_error();
-    exit();     //may also use die instead
+    die("Failed to connect to MySQL: " . mysqli_connect_error());
 }
 
 function redirect_to($location) {
@@ -78,5 +77,8 @@ if (isset($_SESSION['User_email'])) {
 
 </html>
 
-
+<?php
+// no need to free data 
+mysqli_close($db);
+?>
 
