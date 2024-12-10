@@ -1,5 +1,4 @@
 <?php
-require_once 'config.php';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST")
 {
@@ -23,7 +22,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")
     }
     else if ($check_password_length >= 8)
     {
-        $error = "Password must be at least 8 characters long. Please try again."
+        $error = "Password must be at least 8 characters long. Please try again.";
     }
     else if($check_password_cases)
     {

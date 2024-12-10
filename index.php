@@ -4,6 +4,7 @@ $username = "root";
 $password = "";
 
 $db = mysqli_connect($servername, $username, $password);    //same as new mysqli() in theory
+$db_select = mysqli_select_db($db, "Car_rental_DB");
 
 if (mysqli_connect_errno()) {
     die("Failed to connect to MySQL: " . mysqli_connect_error());
@@ -14,10 +15,30 @@ function redirect_to($location) {
     exit;
 }
 
-session_start();
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $email = $_POST["email"];
+    $password = $_POST["password"];
 
-if (isset($_SESSION['User_email'])) {
-    redirect_to("home.php");            // still needs to create 
+    $checkEmailAccess = "SELECT * FROM Account_Access WHERE Email = '$email';";
+
+    if ($result = $db->query($checkEmailAccess)) {
+        if ($result->num_rows > 0) {
+            $row = $result->fetch_assoc();
+            if ($row["password"] === $password) {
+                redirect_to("home.php");
+            }
+            else {
+                echo "Incorrect password. Try again.";
+            }
+        }
+        else {
+            echo "Incorrect email or password. Try again.";
+        }
+    }
+    else {
+        echo "There has been a fatal internal DB error.";
+    }
+
 }
 
 ?>
@@ -38,7 +59,7 @@ if (isset($_SESSION['User_email'])) {
     <div class="container">
         <div class="center-box">
             <h1>Login</h1>
-            <form action="login.php" method="post"> <!-- still needs to be added -->
+            <form action="index.php" method="post"> <!-- still needs to be added -->
 
                 <div class="field input">
                     <label for="email">Email</label>
@@ -54,18 +75,6 @@ if (isset($_SESSION['User_email'])) {
                     <input type="submit" class="btn" name="submit" value="login" required>
                 </div>
 
-                <?php if (isset($_GET['error'])) {
-                    if ($_GET['error'] === "0") {
-                        echo "Incorrect email. Try again.";
-                    }
-                    else if ($_GET['error'] === "1") {
-                        echo "Incorrect password. Try again.";
-                    }
-                    else if ($_GET['error'] === "2") {
-                        echo "There has been a fatal internal DB error.";
-                    }
-                }
-                ?>
                 <div class="links">
                     If you don't have an account, <a href="register.php">register</a>  <!-- register still needs to be added -->
                 </div>
@@ -77,8 +86,8 @@ if (isset($_SESSION['User_email'])) {
 
 </html>
 
-<?php
-// no need to free data 
+ <!-- <?php 
+//  no need to free data 
 mysqli_close($db);
-?>
+?> -->
 
