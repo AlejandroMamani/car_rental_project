@@ -27,7 +27,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             if ($row["password"] === $password) {
 
                 session_start();
-                $_SESSION["user_email"] = $row["account_ID"];
+                $_SESSION["user_email"] = $row["$email"];
 
                 if ($row["account_ID"][0] == 'E') {
                     redirect_to("employeeHome.php");
