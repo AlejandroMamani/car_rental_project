@@ -6,10 +6,10 @@ $password = "";
 // start connection
 $db = mysqli_connect($servername, $username, $password);
 
-if (mysqli_connect_errno()) {
-    die("Connection failed: " . mysqli_connect_error());
-}
-echo "Connected successfully.";
+// if (mysqli_connect_errno()) {
+//     die("Connection failed: " . mysqli_connect_error());
+// }
+// echo "Connected successfully.";
 
 $query = file_get_contents('sql/CREATE_Car_tables.sql');
 $queries = explode(';', $query);

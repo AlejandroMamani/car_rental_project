@@ -62,12 +62,12 @@ create table if not exists Vehicle_Details(				-- manufacturer is removed as it 
 create table if not exists Car_Storage(					-- table name changed due to conflicts with sql naming convenctions!!!
     info_ID int NOT NULL,					-- added to match with vehicle_details. !!! Must be set !!!
     car_ID varchar(10) NOT NULL unique,
-    branch_ID varchar(10) NOT NULL unique,
+    branch_ID varchar(10) NOT NULL,
     car_status char NOT NULL,					-- to save space (involved logic to print in webpage) and name changed!!!
     location varchar(50) NOT NULL,
     price decimal(11,2) NOT NULL,						-- needs to be formated for printing
     registration_No varchar(25) NOT NULL unique,		-- moved from vehicle details to car_storage!!!
-    daily_rate int check (daily_rate > 0 AND daily_rate < 100),								-- int as it will be a factor of calculatoins and storage for details	-- moved from vehicle details to car_storage!!!
+    daily_rate int check (daily_rate >= 0 AND daily_rate <= 100),								-- int as it will be a factor of calculatoins and storage for details	-- moved from vehicle details to car_storage!!!
     primary key(car_ID, branch_ID, registration_No),
     foreign key(info_ID) references Vehicle_Details (info_ID) ON UPDATE cascade
 );		-- car_name varchar(20) NOT NULL,					-- removed due to redundancy!!!
