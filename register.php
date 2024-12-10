@@ -1,7 +1,8 @@
 <?php
 require_once 'config.php';
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
+if ($_SERVER["REQUEST_METHOD"] == "POST")
+{
     // Retrieve form data
     $email = $_POST["email"];
     $password = $_POST["password"];
@@ -10,13 +11,27 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $phone_number = $_POST["phone_number"];
     $driver_licence = $_POST["driver_license"];
 
-    // Check if the email already exists in the database
+    // Extra checks
     $check_email_sql = "SELECT * FROM User WHERE Email = '$email'";
     $check_email_result = $conn->query($check_email_sql);
-
-    if ($check_email_result->num_rows > 0) {
+    
+    $check_password_length = strlen($password);
+    $check_password_cases = (preg_match('/[A-Z]+/', $password) && preg_match('/[a-z]+/', $password) && preg_match('/[\d!$%^&]+/', $password));
+    if ($check_email_result->num_rows > 0)
+    {
         $error = "Email already exists. Please use a different email.";
-    } else {
+    }
+    else if ($check_password_length >= 8)
+    {
+        $error = "Password must be at least 8 characters long. Please try again."
+    }
+    else if($check_password_cases)
+    {
+        $error = "Passwords must be at least eight characters long and include at least one uppercase letter, one lowercase letter, one number, 
+        and one special character.";
+    }    
+    else
+    {
         // Insert user into the database
         $sql = "INSERT INTO User (Email, Password, F_Name, LName, Phone_Number, Driver_License, Created_At)
                 VALUES ('$email', '$password', '$first_name', '$last_name', '$phone_number', '$driver_license', NOW())";
