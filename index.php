@@ -25,7 +25,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         if ($result->num_rows > 0) {
             $row = $result->fetch_assoc();
             if ($row["password"] === $password) {
-                redirect_to("home.php");
+
+                if ($row["account_ID"][0] == 'E') {
+                    redirect_to("employeeHome.php");
+                }
+                redirect_to("customerHome.php");
             }
             else {
                 echo "Incorrect password. Try again.";
