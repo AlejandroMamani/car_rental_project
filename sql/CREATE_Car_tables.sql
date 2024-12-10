@@ -67,7 +67,7 @@ create table if not exists Car_Storage(					-- table name changed due to conflic
     location varchar(50) NOT NULL,
     price decimal(11,2) NOT NULL,						-- needs to be formated for printing
     registration_No varchar(25) NOT NULL unique,		-- moved from vehicle details to car_storage!!!
-    daily_rate int,								-- int as it will be a factor of calculatoins and storage for details	-- moved from vehicle details to car_storage!!!
+    daily_rate int check (daily_rate > 0 AND daily_rate < 100),								-- int as it will be a factor of calculatoins and storage for details	-- moved from vehicle details to car_storage!!!
     primary key(car_ID, branch_ID, registration_No),
     foreign key(info_ID) references Vehicle_Details (info_ID) ON UPDATE cascade
 );		-- car_name varchar(20) NOT NULL,					-- removed due to redundancy!!!
