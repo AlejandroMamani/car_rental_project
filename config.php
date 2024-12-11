@@ -28,9 +28,9 @@ if ($result->num_rows > 0) {
   $db_select = mysqli_select_db($conn, "Car_rental_DB");
   // Create customer_history view
   $sql = "CREATE VIEW customer_history AS
-  SELECT B.account_ID, CH.time_stamp, CH.total_payment, CS.info_ID
-  FROM Book AS B, Car_History as CH, car_storage as CS
-  WHERE B.car_ID = CH.car_ID and CS.car_ID = CH.car_ID
+  SELECT B.account_ID, CH.time_stamp, CH.total_payment, CS.info_ID, VD.full_car_name, VD.car_type
+  FROM Book AS B, Car_History as CH, car_storage as CS, vehicle_details as VD
+  WHERE B.car_ID = CH.car_ID and CS.car_ID = CH.car_ID and VD.info_ID = CS.info_ID
   Order by CH.time_stamp desc;";
 
   if ($conn->query($sql) === TRUE) {
@@ -43,7 +43,7 @@ if ($result->num_rows > 0) {
 
 // End of views creation
 
-
+$conn->close();
 ?>
 
 
