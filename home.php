@@ -43,7 +43,8 @@ $db_select = mysqli_select_db($conn, "Car_rental_DB");
     <!-- Main Content -->
     <main>
         <h1>Welcome to Easy Ride Car Rental</h1>
-        <p>Hello, <?php echo htmlspecialchars($user_email); ?>! What would you like to do today?</p>
+        
+        <p>Hello, <?php echo htmlspecialchars($user_email); ?>! What would you like to do today? <?php echo htmlspecialchars($_SESSION['account_ID']); ?></p>
 
         <div class="features">
             <a href="search.php" class="feature-link">Search Cars</a>

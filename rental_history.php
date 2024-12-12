@@ -79,6 +79,8 @@ if (mysqli_connect_errno()) {
                             <?php
                                         }
                                     }
+                                } else {
+                                    echo "There is no rental history";
                                 }
                                 ?>
                             

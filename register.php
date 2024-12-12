@@ -1,4 +1,10 @@
 <?php
+ $servername = "localhost";
+ $username = "root";
+ $password = "";
+ $database = "Car_rental_DB";
+ $conn = mysqli_connect($servername, $username, $password);
+ $selected = mysqli_select_db($conn, $database);
 
 if ($_SERVER["REQUEST_METHOD"] == "POST")
 {
@@ -10,8 +16,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")
     $phone_number = $_POST["phone_number"];
     $driver_licence = $_POST["driver_license"];
 
+    // Connect to the database
+   
+
     // Extra checks
-    $check_email_sql = "SELECT * FROM account_ID WHERE Email = '$email'";
+    $check_email_sql = "SELECT * FROM account_access WHERE Email = '$email'";
     $check_email_result = $conn->query($check_email_sql);
     
     $check_password_length = strlen($password);
@@ -20,7 +29,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")
     {
         $error = "Email already exists. Please use a different email.";
     }
-    else if ($check_password_length >= 8)
+    else if ($check_password_length < 8)
     {
         $error = "Password must be at least 8 characters long. Please try again.";
     }
@@ -31,15 +40,28 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")
     }    
     else
     {
+        $query= "Select * from account_access";
+        $accounts= mysqli_query($conn, $query);
+        $account_num= "C" . (mysqli_num_rows($accounts)+ 2);
         // Insert user into the database
-        $sql = "INSERT INTO User (Email, Password, F_Name, LName, Phone_Number, Driver_License, Created_At)
-                VALUES ('$email', '$password', '$first_name', '$last_name', '$phone_number', '$driver_license', NOW())";
+        $sql = "INSERT INTO account_access (account_ID, Email, Password)
+                VALUES ('$account_num','$email', '$password');";
 
         if ($conn->query($sql) === TRUE) {
             $success = "User registered successfully.";
         } else {
             $error = "Error: " . $sql . "<br>" . $conn->error;
         }
+
+        $sql = "INSERT INTO customers (Fname, Lname, account_ID, driver_licence, Email, phone_No)
+                VALUES ('$first_name', '$last_name','$account_num','$driver_licence','$email', '$phone_number');";
+
+        if ($conn->query($sql) === TRUE) {
+            $success = "User registered successfully.";
+        } else {
+            $error = "Error: " . $sql . "<br>" . $conn->error;
+        }
+
     }
 }
 ?>

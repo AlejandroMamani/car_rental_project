@@ -21,7 +21,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $email = $_POST["email"];
     $password = $_POST["password"];
 
-    $checkEmailAccess = "SELECT * FROM Account_Access WHERE Email = '$email';";
+    $checkEmailAccess = "SELECT account_ID, password FROM Account_Access WHERE Email = '$email';";
 
     if ($result = $db->query($checkEmailAccess)) {
         if ($result->num_rows > 0) {
@@ -30,7 +30,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             if ($row["password"] === $password) {
 
                 $_SESSION["user_email"] = $email;
-                $_SESSION["account_id"] = $row["account_ID"]; // ensure consistency in naming
+                $_SESSION["account_ID"] = $row["account_ID"]; // ensure consistency in naming
 
                 // redirect based on acount type (Employee vs Customer)
                 if ($row["account_ID"][0] == 'E') {
@@ -49,7 +49,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 }
 ?>
 
-<!-- doing all this crap at 12pm and feeling like sleepy rn so there may be some bugs -->
 
 <!DOCTYPE html>
 <html lang="en">
