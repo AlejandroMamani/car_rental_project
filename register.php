@@ -45,21 +45,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")
 ?>
 
 <!DOCTYPE html>
-<html>
+<html lang= "en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register - AEM</title>
-    <link rel="stylesheet" type="text/css" href="css/style.css">
+    <link rel="stylesheet" type="text/css" href="style/style.css">
 </head>
 <body>
     <header>
           <nav class="navbar">
             <ul class="navbar-left">
-                <li><a href="index.php">Home</a></li>
-                <li><a href="rentals.php">Rentals</a></li>
-            </ul>
-
-            <ul class="navbar-right">
-                <li><a href="login.php">Login</a></li>
+                <li><a href="index.php">Back to log in</a></li>
             </ul>
         </nav>
     </header>
