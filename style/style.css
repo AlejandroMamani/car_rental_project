@@ -180,6 +180,28 @@ nav ul li a:hover {
     }
 }
 
+/* bottom-box styles */
+
+.bottom-box{
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    height: wrap-content;
+}
+.left-side{
+    padding-left: 10px;
+    padding-top: 300px;
+    flex-basis: 20%;
+}
+.right-side{
+    flex-basis: 80%;
+    float: right;
+    width: 50vw;
+    height: 80vh;
+    overflow: auto;
+    
+}
+
 /* Footer Styles */
 footer {
     background-color: rgb(34, 52, 70);
@@ -189,4 +211,6 @@ footer {
     position: absolute;
     bottom: 0;
     width: 100%;
+    height: 50px;
 }
+

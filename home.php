@@ -1,4 +1,8 @@
 <?php
+$servername = "localhost";
+$username = "root";
+$password = "";
+
 session_start();
 
 // Check if the user is logged in
@@ -8,6 +12,10 @@ if (!isset($_SESSION['user_email'])) {
 }
 
 $user_email = $_SESSION['user_email'];
+
+$conn = mysqli_connect("localhost", "root", "", "Car_rental_DB");
+$db_select = mysqli_select_db($conn, "Car_rental_DB");
+
 ?>
 
 <!DOCTYPE html>
@@ -16,7 +24,7 @@ $user_email = $_SESSION['user_email'];
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home - Car Rental</title>
-    <link rel="stylesheet" href="style/style.css">
+    <link rel="stylesheet" href="style/style.css" type= "text/css">
 </head>
 <body>
     <!-- Navigation Bar -->
@@ -42,6 +50,39 @@ $user_email = $_SESSION['user_email'];
             <a href="book.php" class="feature-link">Book a Car</a>
             <a href="rental_history.php" class="feature-link">View Rental History</a>
         </div>
+
+        <div class="bottom-box" >
+            <div class="left-side">
+
+                <h3> Our locations: <br></h3>
+                <h4>Branches Location<br></h4>
+                <?php
+                    $sql = "SELECT location FROM branch";
+                    $result = $conn->query($sql);
+
+                    if ($result->num_rows > 0) {
+                        while ($row = $result->fetch_assoc()) {
+                            echo "<td>" . $row["location"] . "<br></td>";
+                        }
+                    }
+                ?>
+                <h4>Car Storages<br></h4>
+                <?php
+                    $sql = "SELECT location FROM car_storage";
+                    $result = $conn->query($sql);
+
+                    if ($result->num_rows > 0) {
+                        while ($row = $result->fetch_assoc()) {
+                            echo "<td>" . $row["location"] . "<br></td>";
+                        }
+                    }
+                ?>
+            </div>
+            <div class="right-side">
+                <img src="https://shortwork.com/wp-content/uploads/2019/10/DSC_9554_5_6.jpg" alt="Car Rental" width="100%" height="100%" object-fit="cover">
+            </div>
+                
+        </div>               
     </main>
 
     <!-- Footer -->

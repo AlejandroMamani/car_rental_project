@@ -87,7 +87,7 @@ if (mysqli_connect_errno()) {
                     <div class="field output">
                         
                     </div>
-                    
+                </form>  
 
 
             </div>
