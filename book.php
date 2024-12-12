@@ -91,6 +91,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <title>Book a Car</title>
     <link rel="stylesheet" href="style/style.css">
 </head>
+<header>
+        <nav class="navbar">
+            <ul>
+                <li><a href="home.php">Home</a></li>
+                <li><a href="search.php">Search Cars</a></li>
+                <li><a href="book.php">Book a Car</a></li>
+                <li><a href="rental_history.php">View Rental History</a></li>
+                <li><a href="logout.php">Logout</a></li>
+            </ul>
+        </nav>
+    </header>
 <body>
     <h1>Book a Car</h1>
     <?php if (isset($success)) { ?>
