@@ -96,11 +96,15 @@ if ($result->num_rows > 0) {
   echo "The view 'Cars_Interested' already exists.";
 } else {
   $sql = "CREATE VIEW Cars_Interested AS
-  SELECT DISTINCT b.car_ID, vd.full_car_name
-  FROM Book b
-  JOIN Car_Storage cs ON b.car_ID = cs.car_ID
-  JOIN Vehicle_Details vd ON cs.info_ID = vd.info_ID
-  WHERE YEAR(b.pickup_time) = YEAR(CURDATE())";
+  SELECT 
+      cs.car_ID,
+      vd.full_car_name,
+      COUNT(sh.car_id) AS search_count
+  FROM Search_History sh
+  LEFT JOIN Car_Storage cs ON sh.car_id = cs.car_ID
+  LEFT JOIN Vehicle_Details vd ON cs.info_ID = vd.info_ID
+  GROUP BY cs.car_ID, vd.full_car_name
+  ORDER BY search_count DESC";
 
   if ($conn->query($sql) === TRUE) {
     echo "The view 'Cars_Interested' was created successfully.";
