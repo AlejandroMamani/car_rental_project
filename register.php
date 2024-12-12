@@ -89,8 +89,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")
             <input type="tel" id="phone_number" name="phone_number" required>
 
             <label for="driver_license">Driver License:</label>
-            <select id="driver_license" name="driver license" required>
-            </select>
+            <input type="text" id="driver_license" name="driver license" required>
 
             <button type="submit">Register</button>
         </form>
