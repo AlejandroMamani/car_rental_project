@@ -1,14 +1,31 @@
 <?php
 session_start();
 
-// Check if user is logged 
+// check user is logged in
 if (!isset($_SESSION['user_email'])) {
     header("Location: index.php");
     exit;
 }
 
-//require_once 'config.php'; // Include database 
+// check account_id is in session
+if (!isset($_SESSION['account_id'])) {
+    die("Account ID is missing. Please log in again.");
+}
 
+// check database connection (if not already established)
+$servername = "localhost";
+$username = "root";
+$password = "";
+$database = "Car_rental_DB";
+
+$conn = new mysqli($servername, $username, $password, $database);
+
+// Check connection
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
+
+// Book
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $car_id = $_POST['car_id'];
     $pickup_location = $_POST['pickup_location'];
@@ -17,67 +34,82 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $drop_time = $_POST['drop_time'];
     $account_id = $_SESSION['account_id'];
 
-    // Check if agent exists for pickup/drop-off locations
-    $pickup_agent_query = "
-        SELECT account_ID 
-        FROM Employees 
-        WHERE branch_ID = (
-            SELECT branch_ID 
-            FROM Branch 
-            WHERE location = ?
-        )
-        ORDER BY RAND()
-        LIMIT 1
+    // check if booking already exists
+    $check_query = "
+        SELECT * FROM Book 
+        WHERE car_ID = ? AND account_ID = ?
     ";
-    $pickup_agent_stmt = $conn->prepare($pickup_agent_query);
-    $pickup_agent_stmt->bind_param("s", $pickup_location);
-    $pickup_agent_stmt->execute();
-    $pickup_agent_result = $pickup_agent_stmt->get_result();
-    $pickup_agent = $pickup_agent_result->fetch_assoc()['account_ID'];
+    $check_stmt = $conn->prepare($check_query);
+    $check_stmt->bind_param("ss", $car_id, $account_id);
+    $check_stmt->execute();
+    $check_result = $check_stmt->get_result();
 
-    $drop_agent_query = "
-        SELECT account_ID 
-        FROM Employees 
-        WHERE branch_ID = (
-            SELECT branch_ID 
-            FROM Branch 
-            WHERE location = ?
-        )
-        ORDER BY RAND()
-        LIMIT 1
-    ";
-    $drop_agent_stmt = $conn->prepare($drop_agent_query);
-    $drop_agent_stmt->bind_param("s", $drop_location);
-    $drop_agent_stmt->execute();
-    $drop_agent_result = $drop_agent_stmt->get_result();
-    $drop_agent = $drop_agent_result->fetch_assoc()['account_ID'];
-
-    if (!$pickup_agent || !$drop_agent) {
-        $error = "No agents available at the specified locations.";
+    if ($check_result->num_rows > 0) {
+        $error = "This car has already been booked by you.";
     } else {
-        // Insert booking into Book 
-        $query = "
-            INSERT INTO Book (pickup_Location, drop_Location, pickup_time, drop_time, car_ID, book_status, account_ID, pickup_agent_ID, drop_agent_ID)
-            VALUES (?, ?, ?, ?, ?, 'A', ?, ?, ?)
+        // assign pickup agent
+        $pickup_agent_query = "
+            SELECT account_ID 
+            FROM Employees 
+            WHERE branch_ID = (
+                SELECT branch_ID 
+                FROM Branch 
+                WHERE location = ?
+            )
+            ORDER BY RAND()
+            LIMIT 1
         ";
+        $pickup_agent_stmt = $conn->prepare($pickup_agent_query);
+        $pickup_agent_stmt->bind_param("s", $pickup_location);
+        $pickup_agent_stmt->execute();
+        $pickup_agent_result = $pickup_agent_stmt->get_result();
+        $pickup_agent = $pickup_agent_result->fetch_assoc()['account_ID'];
 
-        $stmt = $conn->prepare($query);
-        $stmt->bind_param(
-            "ssssssss", 
-            $pickup_location, 
-            $drop_location, 
-            $pickup_time, 
-            $drop_time, 
-            $car_id, 
-            $account_id, 
-            $pickup_agent, 
-            $drop_agent
-        );
+        // assign drop agent
+        $drop_agent_query = "
+            SELECT account_ID 
+            FROM Employees 
+            WHERE branch_ID = (
+                SELECT branch_ID 
+                FROM Branch 
+                WHERE location = ?
+            )
+            ORDER BY RAND()
+            LIMIT 1
+        ";
+        $drop_agent_stmt = $conn->prepare($drop_agent_query);
+        $drop_agent_stmt->bind_param("s", $drop_location);
+        $drop_agent_stmt->execute();
+        $drop_agent_result = $drop_agent_stmt->get_result();
+        $drop_agent = $drop_agent_result->fetch_assoc()['account_ID'];
 
-        if ($stmt->execute()) {
-            $success = "Car booked successfully! Pickup agent: $pickup_agent, Drop agent: $drop_agent";
+        if (!$pickup_agent || !$drop_agent) {
+            $error = "No agents available at the specified locations.";
         } else {
-            $error = "Failed to book car: " . $stmt->error;
+            // insert booking into Book table
+            $query = "
+                INSERT INTO Book (pickup_Location, drop_Location, pickup_time, drop_time, car_ID, book_status, account_ID, pickup_agent_ID, drop_agent_ID)
+                VALUES (?, ?, ?, ?, ?, 'A', ?, ?, ?)
+            ";
+
+            $stmt = $conn->prepare($query);
+            $stmt->bind_param(
+                "ssssssss", 
+                $pickup_location, 
+                $drop_location, 
+                $pickup_time, 
+                $drop_time, 
+                $car_id, 
+                $account_id, 
+                $pickup_agent, 
+                $drop_agent
+            );
+
+            if ($stmt->execute()) {
+                $success = "Car booked successfully! Pickup agent: $pickup_agent, Drop agent: $drop_agent";
+            } else {
+                $error = "Failed to book car: " . $stmt->error;
+            }
         }
     }
 }
@@ -92,16 +124,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <link rel="stylesheet" href="style/style.css">
 </head>
 <header>
-        <nav class="navbar">
-            <ul>
-                <li><a href="home.php">Home</a></li>
-                <li><a href="search.php">Search Cars</a></li>
-                <li><a href="book.php">Book a Car</a></li>
-                <li><a href="rental_history.php">View Rental History</a></li>
-                <li><a href="logout.php">Logout</a></li>
-            </ul>
-        </nav>
-    </header>
+    <nav class="navbar">
+        <ul>
+            <li><a href="home.php">Home</a></li>
+            <li><a href="search.php">Search Cars</a></li>
+            <li><a href="book.php">Book a Car</a></li>
+            <li><a href="rental_history.php">View Rental History</a></li>
+            <li><a href="logout.php">Logout</a></li>
+        </ul>
+    </nav>
+</header>
 <body>
     <h1>Book a Car</h1>
     <?php if (isset($success)) { ?>
