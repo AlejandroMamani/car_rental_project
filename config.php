@@ -18,7 +18,7 @@ echo "\nConnected successfully";
 
 // Views creation
 
-// Check if the view already exists
+// Check if the customer_history view already exists
 $sql = "SELECT * FROM information_schema.views WHERE table_name = 'customer_history'";
 $result = $conn->query($sql);
 
@@ -40,11 +40,74 @@ if ($result->num_rows > 0) {
   }
 }
 
+// Additional views
+
+// View: Frequent_Customers
+$sql = "SELECT * FROM information_schema.views WHERE table_name = 'Frequent_Customers'";
+$result = $conn->query($sql);
+
+if ($result->num_rows > 0) {
+  echo "The view 'Frequent_Customers' already exists.";
+} else {
+  $sql = "CREATE VIEW Frequent_Customers AS
+  SELECT c.Fname, c.Lname, c.email, COUNT(b.car_ID) AS rental_count
+  FROM Customers c
+  JOIN Book b ON c.account_ID = b.account_ID
+  WHERE b.book_status = 'A'
+  GROUP BY c.account_ID
+  HAVING rental_count > 3";
+
+  if ($conn->query($sql) === TRUE) {
+    echo "The view 'Frequent_Customers' was created successfully.";
+  } else {
+    echo "Error creating the view 'Frequent_Customers': " . $conn->error;
+  }
+}
+
+// View: Canceled_Bookings
+$sql = "SELECT * FROM information_schema.views WHERE table_name = 'Canceled_Bookings'";
+$result = $conn->query($sql);
+
+if ($result->num_rows > 0) {
+  echo "The view 'Canceled_Bookings' already exists.";
+} else {
+  $sql = "CREATE VIEW Canceled_Bookings AS
+  SELECT c.Fname, c.Lname, c.email, c.phone_No
+  FROM Customers c
+  JOIN Book b ON c.account_ID = b.account_ID
+  WHERE b.book_status = 'C'";
+
+  if ($conn->query($sql) === TRUE) {
+    echo "The view 'Canceled_Bookings' was created successfully.";
+  } else {
+    echo "Error creating the view 'Canceled_Bookings': " . $conn->error;
+  }
+}
+
+// View: Cars_Interested
+$sql = "SELECT * FROM information_schema.views WHERE table_name = 'Cars_Interested'";
+$result = $conn->query($sql);
+
+if ($result->num_rows > 0) {
+  echo "The view 'Cars_Interested' already exists.";
+} else {
+  $sql = "CREATE VIEW Cars_Interested AS
+  SELECT DISTINCT b.car_ID, vd.full_car_name
+  FROM Book b
+  JOIN Car_Storage cs ON b.car_ID = cs.car_ID
+  JOIN Vehicle_Details vd ON cs.info_ID = vd.info_ID
+  WHERE YEAR(b.pickup_time) = YEAR(CURDATE())";
+
+  if ($conn->query($sql) === TRUE) {
+    echo "The view 'Cars_Interested' was created successfully.";
+  } else {
+    echo "Error creating the view 'Cars_Interested': " . $conn->error;
+  }
+}
 
 // End of views creation
 
 $conn->close();
 ?>
-
 
 <!-- may add butons to clear the sample tables and fill them with the sample data -->
