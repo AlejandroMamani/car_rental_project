@@ -1,9 +1,11 @@
 <?php
+session_start(); 
+
 $servername = "localhost";
 $username = "root";
 $password = "";
 
-$db = mysqli_connect($servername, $username, $password);    //same as new mysqli() in theory
+$db = mysqli_connect($servername, $username, $password);    // same as new mysqli() in theory
 $db_select = mysqli_select_db($db, "Car_rental_DB");
 
 if (mysqli_connect_errno()) {
@@ -11,7 +13,7 @@ if (mysqli_connect_errno()) {
 }
 
 function redirect_to($location) {
-    header("Location: ". $location);      
+    header("Location: " . $location);
     exit;
 }
 
@@ -24,31 +26,27 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if ($result = $db->query($checkEmailAccess)) {
         if ($result->num_rows > 0) {
             $row = $result->fetch_assoc();
+
             if ($row["password"] === $password) {
 
-                session_start();
                 $_SESSION["user_email"] = $email;
-                $_SESSION["account_ID"] = $row["account_ID"];
+                $_SESSION["account_id"] = $row["account_ID"]; // ensure consistency in naming
 
+                // redirect based on acount type (Employee vs Customer)
                 if ($row["account_ID"][0] == 'E') {
                     redirect_to("employeeHome.php");
                 }
                 redirect_to("home.php");
-            }
-            else {
+            } else {
                 echo "Incorrect password. Try again.";
             }
-        }
-        else {
+        } else {
             echo "Incorrect email or password. Try again.";
         }
-    }
-    else {
+    } else {
         echo "There has been a fatal internal DB error.";
     }
-
 }
-
 ?>
 
 <!-- doing all this crap at 12pm and feeling like sleepy rn so there may be some bugs -->
@@ -71,7 +69,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
                 <div class="field input">
                     <label for="email">Email</label>
-                    <input type="text" name="email" id ="email"  required>
+                    <input type="text" name="email" id="email" required>
                 </div>
 
                 <div class="field input">
@@ -84,7 +82,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 </div>
 
                 <div class="links">
-                    If you don't have an account, <a href="register.php">register</a>  <!-- register still needs to be added -->
+                    If you don't have an account, <a href="register.php">register</a> <!-- register still needs to be added -->
                 </div>
 
             </form>
@@ -98,4 +96,3 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 //  no need to free data 
 mysqli_close($db);
 ?> -->
-
