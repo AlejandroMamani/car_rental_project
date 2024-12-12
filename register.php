@@ -11,7 +11,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")
     $driver_licence = $_POST["driver_license"];
 
     // Extra checks
-    $check_email_sql = "SELECT * FROM User WHERE Email = '$email'";
+    $check_email_sql = "SELECT * FROM account_ID WHERE Email = '$email'";
     $check_email_result = $conn->query($check_email_sql);
     
     $check_password_length = strlen($password);
