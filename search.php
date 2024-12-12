@@ -27,6 +27,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     //$search_date = $_POST['search_date'];
     $search_car = $_POST['search_car'];
 
+    $user_id = $_SESSION['account_ID']; // if user id stored in session
+    $log_query = "
+        INSERT INTO Search_History (user_id, branch_location, search_date, car_id)
+        VALUES (?, ?, NOW(), NULL)
+    ";
+    $log_stmt = $conn->prepare($log_query);
+    $log_stmt->bind_param("ss", $user_id, $location);
+    $log_stmt->execute();
+    
     $query = "SELECT cs.car_ID, vd.full_car_name, vd.color, vd.seat_capacity, cs.daily_rate, cs.location
         From car_storage as cs, vehicle_details as vd
         where cs.info_ID = vd.info_ID and car_status = 'A' and cs.location like '%". $location ."%' 
