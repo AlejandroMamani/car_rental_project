@@ -82,9 +82,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     <?php if (isset($result) && $result->num_rows > 0) { ?>
         <h2>Available Cars</h2>
-        <table>
+        <table cellspacing="12">
             <thead>
-                <tr padx="50px">
+                <tr>
                     <th>Car ID</th>
                     <th>Car Name</th>
                     <th>Color</th>

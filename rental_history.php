@@ -20,9 +20,6 @@ $db_select = mysqli_select_db($db, "Car_rental_DB");
 
 if (mysqli_connect_errno()) {
     die("Failed to connect to MySQL: " . mysqli_connect_error());
-
-
-
 }
 
 ?>
@@ -55,21 +52,40 @@ if (mysqli_connect_errno()) {
             <h1>Rental History</h1>
             <div class="history box">
                 <form action="rental_history.php" method="post">
-                    <div class="field output">
-                        <?php
-                        // use view for to build the customer history of vehicles 
-                        $customerID = $_SESSION['account_ID'];
-                        $history_query = "SELECT * FROM customer_history WHERE account_ID = '$customerID'";
-                        if ($result = $db->query($history_query)) {
-                            if ($result->num_rows > 0) {
-                                while ($row = $result->fetch_assoc()) {
-                                    echo "<hr style='border: 1px solid black; margin: 0;'><tr><td>" ;
-                                    echo "</td> <td>" . $row["time_stamp"]. "</td> <td>" . $row["total_payment"]. 
-                                    "</td> <td>" . $row["full_car_name"]."</td> <td>". $row["car_type"]. "</td> </tr>";
+                    <table cellspacing="12">
+                        <thead>
+                            <tr>
+                                <th>Time recorded</th>
+                                <th>Payment</th>
+                                <th>Car Name</th>
+                                <th>Car Type</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php
+                                // use view for to build the customer history of vehicles 
+                                $customerID = $_SESSION['account_ID'];
+                                $history_query = "SELECT * FROM customer_history WHERE account_ID = '$customerID'";
+                                if ($result = $db->query($history_query)) {
+                                    if ($result->num_rows > 0) {
+                                        while ($row = $result->fetch_assoc()) {
+                            ?>
+                                <tr>
+                                    <td><?php echo $row["time_stamp"];?> 
+                                    <td><?php echo $row["total_payment"];?> 
+                                    <td><?php echo $row["full_car_name"];?> 
+                                    <td><?php echo $row["car_type"];?> 
+                                </tr>
+                            <?php
+                                        }
+                                    }
                                 }
-                            }
-                        }
-                        ?>
+                                ?>
+                            
+                        </tbody>
+                    </table>
+                    <div class="field output">
+                        
                     </div>
                     
 
