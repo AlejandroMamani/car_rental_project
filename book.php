@@ -1,13 +1,13 @@
 <?php
 session_start();
 
-// Check if the user is logged in
+// Check if user is logged 
 if (!isset($_SESSION['user_email'])) {
     header("Location: index.php");
     exit;
 }
 
-require_once 'config.php'; // Include database connection
+require_once 'config.php'; // Include database 
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $car_id = $_POST['car_id'];
@@ -17,18 +17,68 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $drop_time = $_POST['drop_time'];
     $account_id = $_SESSION['account_id'];
 
-    $query = "
-        INSERT INTO Book (pickup_Location, drop_Location, pickup_time, drop_time, car_ID, book_status, account_ID)
-        VALUES (?, ?, ?, ?, ?, 'A', ?)
+    // Check if agent exists for pickup/drop-off locations
+    $pickup_agent_query = "
+        SELECT account_ID 
+        FROM Employees 
+        WHERE branch_ID = (
+            SELECT branch_ID 
+            FROM Branch 
+            WHERE location = ?
+        )
+        ORDER BY RAND()
+        LIMIT 1
     ";
+    $pickup_agent_stmt = $conn->prepare($pickup_agent_query);
+    $pickup_agent_stmt->bind_param("s", $pickup_location);
+    $pickup_agent_stmt->execute();
+    $pickup_agent_result = $pickup_agent_stmt->get_result();
+    $pickup_agent = $pickup_agent_result->fetch_assoc()['account_ID'];
 
-    $stmt = $conn->prepare($query);
-    $stmt->bind_param("ssssss", $pickup_location, $drop_location, $pickup_time, $drop_time, $car_id, $account_id);
+    $drop_agent_query = "
+        SELECT account_ID 
+        FROM Employees 
+        WHERE branch_ID = (
+            SELECT branch_ID 
+            FROM Branch 
+            WHERE location = ?
+        )
+        ORDER BY RAND()
+        LIMIT 1
+    ";
+    $drop_agent_stmt = $conn->prepare($drop_agent_query);
+    $drop_agent_stmt->bind_param("s", $drop_location);
+    $drop_agent_stmt->execute();
+    $drop_agent_result = $drop_agent_stmt->get_result();
+    $drop_agent = $drop_agent_result->fetch_assoc()['account_ID'];
 
-    if ($stmt->execute()) {
-        $success = "Car booked successfully!";
+    if (!$pickup_agent || !$drop_agent) {
+        $error = "No agents available at the specified locations.";
     } else {
-        $error = "Failed to book car: " . $stmt->error;
+        // Insert booking into Book 
+        $query = "
+            INSERT INTO Book (pickup_Location, drop_Location, pickup_time, drop_time, car_ID, book_status, account_ID, pickup_agent_ID, drop_agent_ID)
+            VALUES (?, ?, ?, ?, ?, 'A', ?, ?, ?)
+        ";
+
+        $stmt = $conn->prepare($query);
+        $stmt->bind_param(
+            "ssssssss", 
+            $pickup_location, 
+            $drop_location, 
+            $pickup_time, 
+            $drop_time, 
+            $car_id, 
+            $account_id, 
+            $pickup_agent, 
+            $drop_agent
+        );
+
+        if ($stmt->execute()) {
+            $success = "Car booked successfully! Pickup agent: $pickup_agent, Drop agent: $drop_agent";
+        } else {
+            $error = "Failed to book car: " . $stmt->error;
+        }
     }
 }
 ?>
