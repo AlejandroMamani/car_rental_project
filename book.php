@@ -7,7 +7,7 @@ if (!isset($_SESSION['user_email'])) {
     exit;
 }
 
-require_once 'config.php'; // Include database 
+//require_once 'config.php'; // Include database 
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $car_id = $_POST['car_id'];

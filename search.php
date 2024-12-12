@@ -7,7 +7,7 @@ if (!isset($_SESSION['user_email'])) {
     exit;
 }
 
-require_once 'config.php'; // Include database connection
+//require_once 'config.php'; // Include database connection
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $branch_location = $_POST['branch_location'];

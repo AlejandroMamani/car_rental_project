@@ -1,7 +1,11 @@
 <?php
+try {
+  require_once 'DBsetup.php';
+  require_once 'sampleData.php';
+} catch (mysqli_sql_exception $e) {
+  echo "The sample data was inserted alredy";
+}
 
-require_once 'DBsetup.php';
-require_once 'sampleData.php';
 
 $servername = "localhost";
 $username = "root";
