@@ -23,39 +23,27 @@ if (!isset($conn)) {
 }
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $branch_location = $_POST['branch_location'];
-    $search_date = $_POST['search_date'];
+    $location = $_POST['branch_location'];
+    //$search_date = $_POST['search_date'];
+    $search_car = $_POST['search_car'];
 
-    $query = "
-        SELECT cs.car_ID, vd.full_car_name, vd.color, vd.seat_capacity, cs.daily_rate
-        FROM Car_Storage cs
-        JOIN Vehicle_Details vd ON cs.info_ID = vd.info_ID
-        JOIN Branch b ON cs.branch_ID = b.branch_ID
-        WHERE b.location = ? AND cs.car_status = 'A'
-          AND NOT EXISTS (
-              SELECT 1
-              FROM Book b
-              WHERE b.car_ID = cs.car_ID
-                AND (
-                    b.pickup_time <= ? AND b.drop_time >= ?
-                )
-          );
-    ";
+    $query = "SELECT cs.car_ID, vd.full_car_name, vd.color, vd.seat_capacity, cs.daily_rate, cs.location
+        From car_storage as cs, vehicle_details as vd
+        where cs.info_ID = vd.info_ID and car_status = 'A' and cs.location like '%". $location ."%' 
+        and vd.full_car_name like '%". $search_car ."%'";
 
-    $stmt = $conn->prepare($query);
-
-    if (!$stmt) {
-        die("Error preparing the statement: " . $conn->error);
-    }
-
-    $stmt->bind_param("sss", $branch_location, $search_date, $search_date);
-
-    if ($stmt->execute()) {
-        $result = $stmt->get_result();
+    if ($result = $conn->query($query)) {
+        if ($result->num_rows > 0) {
+            $result = $conn->query($query);
+        } else {
+            $error = "No available cars found";
+        }
     } else {
-        $error = "Query execution failed: " . $stmt->error;
+        $error = "Error executing query: " . $conn->error;
     }
 }
+    
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -66,16 +54,28 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <link rel="stylesheet" href="style/style.css">
 </head>
 <body>
+    <header>
+        <nav class="navbar">
+            <ul>
+                <li><a href="home.php">Home</a></li>
+                <li><a href="search.php">Search Cars</a></li>
+                <li><a href="book.php">Book a Car</a></li>
+                <li><a href="rental_history.php">View Rental History</a></li>
+                <li><a href="logout.php">Logout</a></li>
+            </ul>
+        </nav>
+    </header>
+
     <h1>Search Available Cars</h1>
     <?php if (isset($error)) { ?>
         <p style="color: red;"><?php echo htmlspecialchars($error); ?></p>
     <?php } ?>
     <form method="POST">
         <label for="branch_location">Branch Location:</label>
-        <input type="text" id="branch_location" name="branch_location" required>
+        <input type="text" id="branch_location" name="branch_location" >
 
-        <label for="search_date">Search Date:</label>
-        <input type="date" id="search_date" name="search_date" required>
+        <label for="search_car">Search Car:</label>
+        <input type="text" id="search_car" name="search_car" >
 
         <button type="submit">Search</button>
     </form>
@@ -84,12 +84,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <h2>Available Cars</h2>
         <table>
             <thead>
-                <tr>
+                <tr padx="50px">
                     <th>Car ID</th>
                     <th>Car Name</th>
                     <th>Color</th>
                     <th>Seats</th>
                     <th>Daily Rate</th>
+                    <th>Location</th>
                 </tr>
             </thead>
             <tbody>
@@ -100,6 +101,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         <td><?php echo htmlspecialchars($row['color']); ?></td>
                         <td><?php echo htmlspecialchars($row['seat_capacity']); ?></td>
                         <td><?php echo htmlspecialchars($row['daily_rate']); ?></td>
+                        <td><?php echo htmlspecialchars($row['location']); ?></td>
                     </tr>
                 <?php } ?>
             </tbody>
@@ -109,3 +111,4 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <?php } ?>
 </body>
 </html>
+
