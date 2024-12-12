@@ -1,13 +1,26 @@
 <?php
 session_start();
 
-// Check if the user is logged in
+// Check user is logged in
 if (!isset($_SESSION['user_email'])) {
-    header("Location: index.php"); // Redirect to login page
+    header("Location: index.php"); 
     exit;
 }
 
-//require_once 'config.php'; // Include database connection
+// chekc if database connection exists
+if (!isset($conn)) {
+    $servername = "localhost";
+    $username = "root";
+    $password = "";
+    $database = "Car_rental_DB";
+
+    $conn = new mysqli($servername, $username, $password, $database);
+
+    // Check connection
+    if ($conn->connect_error) {
+        die("Connection failed: " . $conn->connect_error);
+    }
+}
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $branch_location = $_POST['branch_location'];
@@ -30,12 +43,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     ";
 
     $stmt = $conn->prepare($query);
+
+    if (!$stmt) {
+        die("Error preparing the statement: " . $conn->error);
+    }
+
     $stmt->bind_param("sss", $branch_location, $search_date, $search_date);
-    $stmt->execute();
-    $result = $stmt->get_result();
+
+    if ($stmt->execute()) {
+        $result = $stmt->get_result();
+    } else {
+        $error = "Query execution failed: " . $stmt->error;
+    }
 }
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -46,6 +67,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 </head>
 <body>
     <h1>Search Available Cars</h1>
+    <?php if (isset($error)) { ?>
+        <p style="color: red;"><?php echo htmlspecialchars($error); ?></p>
+    <?php } ?>
     <form method="POST">
         <label for="branch_location">Branch Location:</label>
         <input type="text" id="branch_location" name="branch_location" required>
@@ -56,7 +80,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <button type="submit">Search</button>
     </form>
 
-    <?php if (isset($result)) { ?>
+    <?php if (isset($result) && $result->num_rows > 0) { ?>
         <h2>Available Cars</h2>
         <table>
             <thead>
@@ -80,6 +104,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <?php } ?>
             </tbody>
         </table>
+    <?php } elseif ($_SERVER["REQUEST_METHOD"] == "POST") { ?>
+        <p>No available cars found for the given location and date.</p>
     <?php } ?>
 </body>
 </html>
