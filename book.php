@@ -1,18 +1,18 @@
 <?php
 session_start();
 
-// check user is logged in
+// Check if user is logged in
 if (!isset($_SESSION['user_email'])) {
     header("Location: index.php");
     exit;
 }
 
-// check account_id is in session
+// Check if account_id is in session
 if (!isset($_SESSION['account_id'])) {
     die("Account ID is missing. Please log in again.");
 }
 
-// check database connection (if not already established)
+// Database connection
 $servername = "localhost";
 $username = "root";
 $password = "";
@@ -25,7 +25,7 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-// Book
+// Booking logic
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $car_id = $_POST['car_id'];
     $pickup_location = $_POST['pickup_location'];
@@ -34,82 +34,43 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $drop_time = $_POST['drop_time'];
     $account_id = $_SESSION['account_id'];
 
-    // check if booking already exists
-    $check_query = "
+    // Check for overlapping bookings
+    $overlap_query = "
         SELECT * FROM Book 
-        WHERE car_ID = ? AND account_ID = ?
+        WHERE car_ID = ? 
+        AND (
+            (pickup_time < ? AND drop_time > ?)
+        )
     ";
-    $check_stmt = $conn->prepare($check_query);
-    $check_stmt->bind_param("ss", $car_id, $account_id);
-    $check_stmt->execute();
-    $check_result = $check_stmt->get_result();
+    $overlap_stmt = $conn->prepare($overlap_query);
+    $overlap_stmt->bind_param("sss", $car_id, $drop_time, $pickup_time);
+    $overlap_stmt->execute();
+    $overlap_result = $overlap_stmt->get_result();
 
-    if ($check_result->num_rows > 0) {
-        $error = "This car has already been booked by you.";
+    if ($overlap_result->num_rows > 0) {
+        $error = "This car is already booked for the selected time slot.";
     } else {
-        // assign pickup agent
-        $pickup_agent_query = "
-            SELECT account_ID 
-            FROM Employees 
-            WHERE branch_ID = (
-                SELECT branch_ID 
-                FROM Branch 
-                WHERE location = ?
-            )
-            ORDER BY RAND()
-            LIMIT 1
+        // Insert booking into Book table
+        $insert_query = "
+            INSERT INTO Book (pickup_Location, drop_Location, pickup_time, drop_time, car_ID, book_status, account_ID)
+            VALUES (?, ?, ?, ?, ?, 'A', ?)
         ";
-        $pickup_agent_stmt = $conn->prepare($pickup_agent_query);
-        $pickup_agent_stmt->bind_param("s", $pickup_location);
-        $pickup_agent_stmt->execute();
-        $pickup_agent_result = $pickup_agent_stmt->get_result();
-        $pickup_agent = $pickup_agent_result->fetch_assoc()['account_ID'];
 
-        // assign drop agent
-        $drop_agent_query = "
-            SELECT account_ID 
-            FROM Employees 
-            WHERE branch_ID = (
-                SELECT branch_ID 
-                FROM Branch 
-                WHERE location = ?
-            )
-            ORDER BY RAND()
-            LIMIT 1
-        ";
-        $drop_agent_stmt = $conn->prepare($drop_agent_query);
-        $drop_agent_stmt->bind_param("s", $drop_location);
-        $drop_agent_stmt->execute();
-        $drop_agent_result = $drop_agent_stmt->get_result();
-        $drop_agent = $drop_agent_result->fetch_assoc()['account_ID'];
+        $insert_stmt = $conn->prepare($insert_query);
+        $insert_stmt->bind_param(
+            "ssssss",
+            $pickup_location,
+            $drop_location,
+            $pickup_time,
+            $drop_time,
+            $car_id,
+            $account_id
+        );
 
-        if (!$pickup_agent || !$drop_agent) {
-            $error = "No agents available at the specified locations.";
+        if ($insert_stmt->execute()) {
+            $success = "Car booked successfully!";
         } else {
-            // insert booking into Book table
-            $query = "
-                INSERT INTO Book (pickup_Location, drop_Location, pickup_time, drop_time, car_ID, book_status, account_ID, pickup_agent_ID, drop_agent_ID)
-                VALUES (?, ?, ?, ?, ?, 'A', ?, ?, ?)
-            ";
-
-            $stmt = $conn->prepare($query);
-            $stmt->bind_param(
-                "ssssssss", 
-                $pickup_location, 
-                $drop_location, 
-                $pickup_time, 
-                $drop_time, 
-                $car_id, 
-                $account_id, 
-                $pickup_agent, 
-                $drop_agent
-            );
-
-            if ($stmt->execute()) {
-                $success = "Car booked successfully! Pickup agent: $pickup_agent, Drop agent: $drop_agent";
-            } else {
-                $error = "Failed to book car: " . $stmt->error;
-            }
+            $error = "Failed to book car: " . $insert_stmt->error;
         }
     }
 }
@@ -137,10 +98,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <body>
     <h1>Book a Car</h1>
     <?php if (isset($success)) { ?>
-        <p style="color: green;"><?php echo $success; ?></p>
+        <p style="color: green;">
+            <?php echo $success; ?>
+        </p>
     <?php } ?>
     <?php if (isset($error)) { ?>
-        <p style="color: red;"><?php echo $error; ?></p>
+        <p style="color: red;">
+            <?php echo $error; ?>
+        </p>
     <?php } ?>
     <form method="POST">
         <label for="car_id">Car ID:</label>
@@ -162,4 +127,3 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     </form>
 </body>
 </html>
-
