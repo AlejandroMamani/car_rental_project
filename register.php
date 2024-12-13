@@ -81,29 +81,46 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")
         <?php if (isset($success)) { ?>
             <p style="color: green;"><?php echo $success; ?></p>
         <?php } ?>
+
         <form action="register.php" method="POST">
+        <div class="field input">
             <label for="email">Email:</label>
             <input type="email" id="email" name="email" required>
+        </div>
 
+        <div class="field input">
             <label for="password">Password:</label>
             <input type="password" id="password" name="password" required>
+        </div>
 
+        <div class="field input">
             <label for="first_name">First Name:</label>
             <input type="text" id="first_name" name="first_name" required>
+        </div>
 
+        <div class="field input">
             <label for="last_name">Last Name:</label>
             <input type="text" id="last_name" name="last_name" required>
+        </div>
 
+        <div class="field input">
             <label for="phone_number">Phone Number:</label>
             <input type="tel" id="phone_number" name="phone_number" required>
+        </div>
 
+        <div class="field input">
             <label for="driver_license">Driver License:</label>
             <input type="text" id="driver_license" name="driver license" required>
+        </div>
 
+        <div class="field input">
             <label for="address">Address:</label>
             <input type="text" id="address" name="address" required>
+        </div>
 
+        <div class="field input">
             <button type="submit">Register</button>
+        </div>
         </form>
     </main>
 </body>
