@@ -1,0 +1,13 @@
+DROP TABLE IF EXISTS Book;
+
+CREATE TABLE IF NOT EXISTS Book (
+    pickup_Location VARCHAR(50) NOT NULL,
+    drop_Location VARCHAR(50) NOT NULL,
+    pickup_time DATETIME NOT NULL,
+    drop_time DATETIME NOT NULL,
+    car_ID VARCHAR(10) NOT NULL,
+    book_status CHAR NOT NULL,
+    time_stamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    account_ID VARCHAR(10) NOT NULL,
+    FOREIGN KEY (car_ID) REFERENCES Car_Storage (car_ID) ON UPDATE CASCADE
+);
