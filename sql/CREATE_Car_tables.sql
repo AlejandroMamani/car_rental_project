@@ -85,17 +85,17 @@ create table if not exists Car_History(				-- table name changed due to conflict
     foreign key (car_ID) references Car_Storage (car_ID) ON UPDATE cascade
 );
 
-create table if not exists Book(
-    pickup_Location varchar(50) NOT NULL,
-    drop_Location varchar(50) NOT NULL,
-    pickup_time datetime NOT NULL,
-    drop_time datetime NOT NULL,
-    car_ID varchar(10) NOT NULL,
-    book_status char NOT NULL,
-    time_stamp timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    account_ID varchar(10) NOT NULL,
-    primary key (car_ID, account_ID),
-    foreign key (car_ID) references Car_Storage (car_ID) ON UPDATE cascade
+CREATE TABLE IF NOT EXISTS Book(
+    pickup_Location VARCHAR(50) NOT NULL,
+    drop_Location VARCHAR(50) NOT NULL,
+    pickup_time DATETIME NOT NULL,
+    drop_time DATETIME NOT NULL,
+    car_ID VARCHAR(10) NOT NULL,
+    book_status CHAR NOT NULL,
+    time_stamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    account_ID VARCHAR(10) NOT NULL,
+    PRIMARY KEY (car_ID, pickup_time, drop_time), -- Ensure no overlap for same car at same time
+    FOREIGN KEY (car_ID) REFERENCES Car_Storage (car_ID) ON UPDATE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS Search_History (
