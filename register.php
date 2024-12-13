@@ -42,10 +42,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")
             VALUES ('$email', '$password', '$first_name')";
         $sql2 = "INSERT INTO Customers (Fname, LName, Address, Account_ID, driver_license, email, phone_No)
         VALUES ('$first_name', '$last_name','$address', '$first_name', '$driver_license', '$email', '$phone_number')";
-    }
 
-
- if ($conn->query($sql) === TRUE && $conn->query($sql2) === TRUE)
+        if ($conn->query($sql) == TRUE)
         {
             $success = "User registered successfully.";
         }
@@ -54,6 +52,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")
             $error = "Error: " . $sql . "<br>" . $conn->error;
         }
     }
+}
 ?>
 
 <!DOCTYPE html>
