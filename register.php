@@ -1,11 +1,10 @@
 <?php
- $servername = "localhost";
- $username = "root";
- $password = "";
- $database = "Car_rental_DB";
- $conn = mysqli_connect($servername, $username, $password);
- $selected = mysqli_select_db($conn, $database);
 
+$servername = "localhost";
+$username = "root";
+$password = "";
+$database = "Car_rental_DB";
+$conn = new mysqli($servername, $username, $password, $database);
 if ($_SERVER["REQUEST_METHOD"] == "POST")
 {
     // Retrieve form data
@@ -14,13 +13,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")
     $first_name = $_POST["first_name"];
     $last_name = $_POST["last_name"];
     $phone_number = $_POST["phone_number"];
-    $driver_licence = $_POST["driver_license"];
-
-    // Connect to the database
-   
+    $driver_license = $_POST["driver_license"];
+    $address = $_POST["address"];
 
     // Extra checks
-    $check_email_sql = "SELECT * FROM account_access WHERE Email = '$email'";
+    $check_email_sql = "SELECT email FROM Customers WHERE Email = '$email'";
     $check_email_result = $conn->query($check_email_sql);
     
     $check_password_length = strlen($password);
@@ -33,35 +30,28 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")
     {
         $error = "Password must be at least 8 characters long. Please try again.";
     }
-    else if($check_password_cases)
+    else if(!$check_password_cases)
     {
         $error = "Passwords must be at least eight characters long and include at least one uppercase letter, one lowercase letter, one number, 
         and one special character.";
     }    
     else
     {
-        $query= "Select * from account_access";
-        $accounts= mysqli_query($conn, $query);
-        $account_num= "C" . (mysqli_num_rows($accounts)+ 2);
         // Insert user into the database
-        $sql = "INSERT INTO account_access (account_ID, Email, Password)
-                VALUES ('$account_num','$email', '$password');";
+        $sql = "INSERT INTO Account_Access (email, password, Account_ID)
+            VALUES ('$email', '$password', '$first_name')";
+        $sql2 = "INSERT INTO Customers (Fname, LName, Address, Account_ID, driver_license, email, phone_No)
+        VALUES ('$first_name', '$last_name','$address', '$first_name', '$driver_license', '$email', '$phone_number')";
 
-        if ($conn->query($sql) === TRUE) {
+
+ if ($conn->query($sql) === TRUE && $conn->query($sql2) === TRUE)
+        {
             $success = "User registered successfully.";
-        } else {
+        }
+        else
+        {
             $error = "Error: " . $sql . "<br>" . $conn->error;
         }
-
-        $sql = "INSERT INTO customers (Fname, Lname, account_ID, driver_licence, Email, phone_No)
-                VALUES ('$first_name', '$last_name','$account_num','$driver_licence','$email', '$phone_number');";
-
-        if ($conn->query($sql) === TRUE) {
-            $success = "User registered successfully.";
-        } else {
-            $error = "Error: " . $sql . "<br>" . $conn->error;
-        }
-
     }
 }
 ?>
@@ -109,6 +99,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")
 
             <label for="driver_license">Driver License:</label>
             <input type="text" id="driver_license" name="driver license" required>
+
+            <label for="address">Address:</label>
+            <input type="text" id="address" name="address" required>
 
             <button type="submit">Register</button>
         </form>
