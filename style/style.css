@@ -199,7 +199,18 @@ nav ul li a:hover {
     width: 50vw;
     height: 80vh;
     overflow: auto;
-    
+}
+.left-box{
+    flex-basis: 40%;
+    overflow: auto;
+}
+.middle-box{
+    flex-basis: 20%;
+    overflow: auto;
+}
+.right-box{
+    flex-basis: 40%;
+    overflow: auto;
 }
 
 /* Footer Styles */

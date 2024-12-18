@@ -89,7 +89,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 }
 // get unavailable schedules
-$unavailable_query = "SELECT pickup_time, drop_time FROM Book WHERE car_ID = '$car_id' AND book_status = 'A' ORDER BY pickup_time desc";
+$unavailable_query = "SELECT pickup_time, drop_time FROM Book WHERE car_ID = '$car_id' AND book_status = 'A' ORDER BY pickup_time asc";
 if ($result = $conn->query($unavailable_query)) {
     if ($result->num_rows > 0) {
         $result = $conn->query($unavailable_query);
