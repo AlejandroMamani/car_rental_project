@@ -25,6 +25,7 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
+$car_id = "";
 //get book needed info
 if (isset($_GET['car_id'])) {
     $car_id = $_GET['car_id'];

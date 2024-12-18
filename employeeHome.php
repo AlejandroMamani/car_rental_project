@@ -43,8 +43,8 @@ $_SESSION['branch_ID'] = $branch_ID;
         <nav class="navbar">
             <ul>
                 <li><a href="employeeHome.php">Home</a></li>
-                <li><a href="search.php">Search Cars</a></li>
-                <li><a href="EBook.php">Stamp Book</a></li>
+                <li><a href="ESearch.php">Search Cars</a></li>
+                <li><a href="EBook.php">Book for customer</a></li>
                 <li><a href="rental_history.php">View Rental History</a></li>
                 <li><a href="logout.php">Logout</a></li>
             </ul>
@@ -71,7 +71,7 @@ $_SESSION['branch_ID'] = $branch_ID;
                                 <li style="border: 3px solid #ccc; padding: 5px;">
                                     <?php echo $row["car_ID"].' '.$row["pickup_Location"].' '.$row["drop_Location"];?><br>
                                     <?php echo $row['pickup_time'].' '.$row['drop_time']; ?><br> 
-                                    <a href="EBook.php?car_id=<?php echo $row['car_ID']?>">check IN/OUT car</a>
+                                    <a href="checkCar.php?car_id=<?php echo $row['car_ID']?>">check IN/OUT car</a>
                                 </li>
                             <?php
                             }
