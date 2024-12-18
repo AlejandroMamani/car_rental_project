@@ -66,10 +66,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <header>
         <nav class="navbar">
             <ul>
-                <li><a href="home.php">Home</a></li>
-                <li><a href="search.php">Search Cars</a></li>
-                <!-- <li><a href="book.php">Book a Car</a></li> -->
-                <li><a href="rental_history.php">View Rental History</a></li>
+                <li><a href="employeeHome.php">Home</a></li>
+                <li><a href="ESearch.php">Search Cars</a></li>
+                <li><a href="Ebook.php">Book for customer</a></li>
+                <!-- <li><a href="rental_history.php">View Rental History</a></li> -->
                 <li><a href="logout.php">Logout</a></li>
             </ul>
         </nav>

@@ -45,7 +45,7 @@ $_SESSION['branch_ID'] = $branch_ID;
                 <li><a href="employeeHome.php">Home</a></li>
                 <li><a href="ESearch.php">Search Cars</a></li>
                 <li><a href="EBook.php">Book for customer</a></li>
-                <li><a href="rental_history.php">View Rental History</a></li>
+                <!-- <li><a href="rental_history.php">View Rental History</a></li> -->
                 <li><a href="logout.php">Logout</a></li>
             </ul>
         </nav>
@@ -61,7 +61,7 @@ $_SESSION['branch_ID'] = $branch_ID;
                 <h3> Upcoming Bookings: <br></h3>
                 <ul>
                     <?php
-                        $sql = "SELECT *, cs.location FROM Book as b, Car_Storage as cs 
+                        $sql = "SELECT *, cs.location, cs.price FROM Book as b, Car_Storage as cs 
                         WHERE b.book_status = 'A' AND cs.car_ID = b.car_id AND cs.branch_ID = '$branch_ID' 
                         ORDER BY b.pickup_time ASC";
                         $result = $conn->query($sql);
@@ -71,7 +71,9 @@ $_SESSION['branch_ID'] = $branch_ID;
                                 <li style="border: 3px solid #ccc; padding: 5px;">
                                     <?php echo $row["car_ID"].' '.$row["pickup_Location"].' '.$row["drop_Location"];?><br>
                                     <?php echo $row['pickup_time'].' '.$row['drop_time']; ?><br> 
-                                    <a href="checkCar.php?car_id=<?php echo $row['car_ID']?>">check IN/OUT car</a>
+                                    <a href="checkCar.php?car_id=<?php echo $row['car_ID']?>&user_ID=<?php echo $row['account_ID']?>
+                                    &pickup_time=<?php echo $row['pickup_time']?>& drop_time=<?php echo $row['drop_time']?>
+                                    &price=<?php echo $row['price']?>&timeStamp=<?php echo $row['time_stamp']?>">check IN/OUT car</a>
                                 </li>
                             <?php
                             }

@@ -103,7 +103,7 @@ if ($result = $conn->query($unavailable_query)) {
             <li><a href="employeeHome.php">Home</a></li>
             <li><a href="ESearch.php">Search Cars</a></li>
             <li><a href="EBook.php">Book for customer</a></li>
-            <li><a href="rental_history.php">View Rental History</a></li>
+            <!-- <li><a href="rental_history.php">View Rental History</a></li> -->
             <li><a href="logout.php">Logout</a></li>
         </ul>
     </nav>
