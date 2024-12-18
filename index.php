@@ -27,9 +27,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $email = $_POST['email'];
         $password = $_POST['password'];
 
-        $checkEmailAccess = "SELECT * FROM Account_Access WHERE Email = '$email';";
+        $checkEmailAccess = "SELECT * FROM Account_Access WHERE email = '$email';";
 
-        if ($result = $dbname->query($checkEmailAccess)) {
+        if ($result = $conn->query($checkEmailAccess)) {
             if ($result->num_rows > 0) {
                 $row = $result->fetch_assoc();
                 if ($row["password"] === $password) {
