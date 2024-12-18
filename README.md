@@ -10,3 +10,8 @@
 
 # START APPLICATION
 Go to localhost/car_rental_project/index.php to acces the login page.
+
+# Access More based on sample data
+Email:         Password:           
+a@b.com        12345678          Access to admin/employee
+e@f.com        aaaaaaaa1         Customer sample account
