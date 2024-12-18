@@ -198,43 +198,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             background-color: #2980b9;
         }
 
-        /* Car Listing Styles */
-        /*.car-listing {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: space-between;
-        }
-
-        .car-card {
-            background-color: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            width: calc(33.333% - 20px);
-            margin-bottom: 20px;
-            padding: 20px;
-            transition: transform 0.3s ease;
-        }
-
-        .car-card:hover {
-            transform: scale(1.05);
-        }
-
-        .car-card img {
-            max-width: 100%;
-            height: auto;
-            border-radius: 4px;
-        }
-
-        .car-card h3 {
-            margin: 10px 0;
-            color: #2c3e50;
-        }
-
-        .car-card .details {
-            color: #7f8c8d;
-        } */
-
-        /* Responsive Design */
         @media screen and (max-width: 768px) {
             nav ul {
                 flex-direction: column;
@@ -304,7 +267,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 </div>
                 <button type="submit" name="login" class="btn">Login</button>
                 <div class="links">
-                    If you don't have an account, <a href="register.php">register</a>  <!-- register still needs to be added -->
+                    If you don't have an account, <a href="register.php">register</a>  
                 </div>
             </form>
         </div>
