@@ -40,7 +40,7 @@ if (mysqli_connect_errno()) {
             <ul>
                 <li><a href="home.php">Home</a></li>
                 <li><a href="search.php">Search Cars</a></li>
-                <li><a href="book.php">Book a Car</a></li>
+                <!-- <li><a href="book.php">Book a Car</a></li> -->
                 <li><a href="rental_history.php">View Rental History</a></li>
                 <li><a href="logout.php">Logout</a></li>
             </ul>

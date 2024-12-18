@@ -36,7 +36,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $log_stmt->bind_param("ss", $user_id, $location);
     $log_stmt->execute();
     
-    $query = "SELECT cs.car_ID, vd.full_car_name, vd.color, vd.seat_capacity, cs.daily_rate, cs.location
+    $query = "SELECT cs.car_ID, vd.full_car_name, vd.color, vd.seat_capacity, cs.daily_rate, cs.location, cs.price
         From car_storage as cs, vehicle_details as vd
         where cs.info_ID = vd.info_ID and car_status = 'A' and cs.location like '%". $location ."%' 
         and vd.full_car_name like '%". $search_car ."%'";
@@ -68,7 +68,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <ul>
                 <li><a href="home.php">Home</a></li>
                 <li><a href="search.php">Search Cars</a></li>
-                <li><a href="book.php">Book a Car</a></li>
+                <!-- <li><a href="book.php">Book a Car</a></li> -->
                 <li><a href="rental_history.php">View Rental History</a></li>
                 <li><a href="logout.php">Logout</a></li>
             </ul>
@@ -100,6 +100,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     <th>Seats</th>
                     <th>Daily Rate</th>
                     <th>Location</th>
+                    <th>Price </th>
                 </tr>
             </thead>
             <tbody>
@@ -111,12 +112,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         <td><?php echo htmlspecialchars($row['seat_capacity']); ?></td>
                         <td><?php echo htmlspecialchars($row['daily_rate']); ?></td>
                         <td><?php echo htmlspecialchars($row['location']); ?></td>
+                        <td><?php echo htmlspecialchars($row['price']); ?></td>
+                        <td><a href="book.php?car_id=<?php echo $row['car_ID'];?>&pickup_location=<?php echo $row['location'];?>
+                        &price=<?php echo $row['price'];?>">Book Now</a></td>
                     </tr>
                 <?php } ?>
             </tbody>
         </table>
     <?php } elseif ($_SERVER["REQUEST_METHOD"] == "POST") { ?>
-        <p>No available cars found for the given location and date.</p>
+        <p>No available cars found for the given location or search criteria.</p>
     <?php } ?>
 </body>
 </html>

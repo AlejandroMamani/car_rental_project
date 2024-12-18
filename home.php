@@ -33,7 +33,7 @@ $db_select = mysqli_select_db($conn, "Car_rental_DB");
             <ul>
                 <li><a href="home.php">Home</a></li>
                 <li><a href="search.php">Search Cars</a></li>
-                <li><a href="book.php">Book a Car</a></li>
+                <!-- <li><a href="book.php">Book a Car</a></li> -->
                 <li><a href="rental_history.php">View Rental History</a></li>
                 <li><a href="logout.php">Logout</a></li>
             </ul>

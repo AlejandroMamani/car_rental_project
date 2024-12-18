@@ -28,8 +28,6 @@ if ($conn->connect_error) {
 //get book needed info
 if (isset($_GET['car_id'])) {
     $car_id = $_GET['car_id'];
-    $pickup_location = $_GET['pickup_location'];
-    $price = $_GET['price'];
 }
 
 // Booking logic
@@ -39,7 +37,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $drop_location = $_POST['drop_location'];
     $pickup_time = $_POST['pickup_time'];
     $drop_time = $_POST['drop_time'];
-    $account_id = $_SESSION['account_ID'];
+    $account_id = $_SESSION['account_id'];
 
     // Check for overlapping bookings
     $overlap_query = "
@@ -73,26 +71,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $car_id,
             $account_id
         );
-        $insert_;
 
         if ($insert_stmt->execute()) {
             $success = "Car booked successfully!";
-            $insert_in_history="INSERT INTO Car_History (rental_status, pickup_agent_ID, drop_agent_ID, total_payment, pickup_location, drop_location, car_ID)
-                VALUES ('Waiting for pick up', 'NA', 'NA', '$price', '$pickup_location', '$pickup_location', '$car_id')";
-            if ($conn->query($insert_in_history) === FALSE){
-                echo "Error: " . $insert_in_history . "<br>" . $conn->error;
-            } 
-            
         } else {
             $error = "Failed to book car: " . $insert_stmt->error;
         }
-    }
-}
-// get unavailable schedules
-$unavailable_query = "SELECT pickup_time, drop_time FROM Book WHERE car_ID = '$car_id' AND book_status = 'A' ORDER BY pickup_time desc";
-if ($result = $conn->query($unavailable_query)) {
-    if ($result->num_rows > 0) {
-        $result = $conn->query($unavailable_query);
     }
 }
 ?>
@@ -110,7 +94,7 @@ if ($result = $conn->query($unavailable_query)) {
         <ul>
             <li><a href="home.php">Home</a></li>
             <li><a href="search.php">Search Cars</a></li>
-            <!-- <li><a href="book.php">Book a Car</a></li> -->
+            <li><a href="book.php">Book a Car</a></li>
             <li><a href="rental_history.php">View Rental History</a></li>
             <li><a href="logout.php">Logout</a></li>
         </ul>
@@ -130,13 +114,13 @@ if ($result = $conn->query($unavailable_query)) {
     <?php } ?>
     <form method="POST">
         <label for="car_id">Car ID:</label>
-        <input type="text" id="car_id" name="car_id" value="<?php echo $car_id; ?>" readonly>
+        <input type="text" id="car_id" name="car_id" value="<?php echo $car_id; ?>" required>
 
         <label for="pickup_location">Pickup Location:</label>
-        <input type="text" id="pickup_location" name="pickup_location" value="<?php echo $pickup_location; ?>" readonly>
+        <input type="text" id="pickup_location" name="pickup_location" required>
 
         <label for="drop_location">Drop Location:</label>
-        <input type="text" id="drop_location" name="drop_location" value="<?php echo $pickup_location; ?>" readonly>
+        <input type="text" id="drop_location" name="drop_location" required>
 
         <label for="pickup_time">Pickup Time:</label>
         <input type="datetime-local" id="pickup_time" name="pickup_time" required>
@@ -144,29 +128,7 @@ if ($result = $conn->query($unavailable_query)) {
         <label for="drop_time">Drop Time:</label>
         <input type="datetime-local" id="drop_time" name="drop_time" required>
 
-        <button type="submit">Check Availability</button>
+        <button type="submit">Book Now</button>
     </form>
-    <h2>Unavailable times</h2>
-    <?php if (isset($result) && $result->num_rows > 0) { ?>
-        <table cellspacing="12">
-            <thead>
-                <tr>
-                    <th>Date:</th>
-                    <th>Time:</th>
-                </tr>
-            </thead>
-            
-            <tbody>
-                <?php while ($row = $result->fetch_assoc()) { ?>
-                    <tr>
-                        <td><?php echo htmlspecialchars($row['pickup_time']); ?></td>
-                        <td><?php echo htmlspecialchars($row['drop_time']); ?></td>
-                    </tr>
-                <?php } ?>
-            </tbody>
-        </table>
-    <?php } else { ?>
-        <p>No unavailable times found.</p>
-    <?php } ?>
 </body>
 </html>
